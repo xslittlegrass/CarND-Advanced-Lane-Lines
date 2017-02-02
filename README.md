@@ -1,11 +1,8 @@
-##Writeup Template
-###You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
+## Advanced Lane Finding Project
 
----
+This is a project for Udacity self-driving car Nanodegree program. The aim of this project is to identify the lane in from a dash camera video. The implementation of the project is in the file `lane_detection.py`, and the explanation of the pipeline is in this README and `lane_detection.ipynb`. The final video output is [here](https://www.youtube.com/watch?v=R33rvELUTQQ).
 
-**Advanced Lane Finding Project**
-
-The goals / steps of this project are the following:
+The steps of this project are the following:
 
 * Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
 * Apply a distortion correction to raw images.
@@ -15,6 +12,9 @@ The goals / steps of this project are the following:
 * Determine the curvature of the lane and vehicle position with respect to center.
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+
+In the following, each step in the pipeline are explained in details.
+
 
 [//]: # (Image References)
 
@@ -27,8 +27,7 @@ The goals / steps of this project are the following:
 [image7]: ./output_images/result_image.png "lane highlighted image"
 [video1]: ./project_video.mp4 "Video"
 
-## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
-###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+
 
 ---
 
@@ -51,6 +50,8 @@ image_undist = undistort(image,dist_mtx,dist_param))
 The function `camera_cal_parameters` and `undistort` are based on the openCV function `cv2.calibrateCamera` and `cv2.undistort`. Here is the result of applying to one of the calibration image 
 
 ![alt text][image1]
+
+---
 
 ### Pipeline (single images)
 
