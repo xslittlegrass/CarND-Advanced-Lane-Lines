@@ -1,19 +1,8 @@
 ## Advanced Lane Finding Project
 
-This is a project for Udacity self-driving car Nanodegree program. The aim of this project is to identify the lane in from a dash camera video. The implementation of the project is in the file `lane_detection.py`, and the explanation of the pipeline is in this README and `lane_detection.ipynb`. The final video output is [here](https://www.youtube.com/watch?v=R33rvELUTQQ).
+This is a project for Udacity self-driving car Nanodegree program. The aim of this project is to identify the lane in a dash camera video. The implementation of the project is in the file `lane_detection.py`, and the explanation of the pipeline is in this README and in `lane_detection.ipynb`. The final video output is [here](https://www.youtube.com/watch?v=R33rvELUTQQ).
 
-The steps of this project are the following:
-
-* Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
-* Apply a distortion correction to raw images.
-* Use color transforms, gradients, etc., to create a thresholded binary image.
-* Apply a perspective transform to rectify binary image ("birds-eye view").
-* Detect lane pixels and fit to find the lane boundary.
-* Determine the curvature of the lane and vehicle position with respect to center.
-* Warp the detected lane boundaries back onto the original image.
-* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
-
-In the following, each step in the pipeline are explained in details.
+In this README, each step in the pipeline will be explained in details.
 
 
 [//]: # (Image References)
@@ -28,28 +17,6 @@ In the following, each step in the pipeline are explained in details.
 [video1]: ./project_video.mp4 "Video"
 
 
-
----
-
-### Camera Calibration
-
-#### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
-
-The camera calibration step is aim to remove the image distortion from the camera. In order to calibrate the camera, several check board images are taken using the same camera and are placed in the folder `./cameral_cal/`. The distortion parameters are calculated using function
-
-```
-dist_mtx,dist_param = camera_cal_parameters(cal_images,image_size)
-```
-
-These parameters can then be used to correct the distortion in the images
-
-```
-image_undist = undistort(image,dist_mtx,dist_param))
-```
-
-The function `camera_cal_parameters` and `undistort` are based on the openCV function `cv2.calibrateCamera` and `cv2.undistort`. Here is the result of applying to one of the calibration image 
-
-![alt text][image1]
 
 ---
 
@@ -69,15 +36,33 @@ In the following, each step in this pipeline will be described in detail.
 
 #### 1. Correct image distortion.
 
-The distortion can be corrected using the function `undistort` as discussed above. Here is the result of applying the correction to one of the test image
+
+The camera calibration step is aimed to remove the image distortion from the camera. In order to calibrate the camera, several check board images are taken using the same camera and are placed in the folder `./cameral_cal/`. The distortion parameters are calculated using function
+
+```
+dist_mtx,dist_param = camera_cal_parameters(cal_images,image_size)
+```
+
+These parameters can then be used to correct the distortion in the images
+
+```
+image_undist = undistort(image,dist_mtx,dist_param))
+```
+
+The function `camera_cal_parameters` and `undistort` are based on the openCV function `cv2.calibrateCamera` and `cv2.undistort`. Here is the result of applying the undistortion to one of the calibration image 
+
+![alt text][image1]
+
+
+And here is the result of applying the correction to one of the test image
 
 ![alt text][image2]
 
 #### 2. Image thresholding to isolate lane lines
 
-A binary image is generated using only color thresholds. The yellow lane lines and white lane lines are separated in different color spaces. The yellow lane line can be separated cleanly in the C channel of are separated in the C channel of LCH color space. The white lane lines are separated in the gray space. The reason to not use gradient filter is that color thresholds allows a cleaner separation and lower noises.
+A binary image is generated using only color thresholds. The yellow lane lines and white lane lines are separated in different color spaces. The yellow lane line are separated in the C channel of LCH color space while the white lane lines are separated in the gray space. The reason to not use gradient filter is that color thresholds is much simpler and allows a cleaner separation and lower noises.
 
-The thresholds can be applied using the function
+The thresholds can be applied to the image using the function
 ```
 preprocess(image,mask_vertices,c_thresh,gray_thresh)
 ```
@@ -109,7 +94,7 @@ After the perspective transform, the two lane lines should be approximately in p
 
 The procedures to detect lane pixels are:
 * Select the bottom half of the image, and obtain a histogram for the intensity as a function of the X value.
-* Smooth this histogram by Gaussian filter, and identify the two peaks using the `find_peaks_cwt` from `scipy.signal`. These two peaks will be used as the initial position of the sliding windows for the left and right lane lines.
+* Smooth this histogram using a Gaussian filter, and identify the two peaks using the `find_peaks_cwt` from `scipy.signal`. These two peaks will be used as the initial position of the sliding windows for the left and right lane lines.
 * Apply a sliding window with certain width and height to the lef and right lane lines. Calculate the histogram in those windows, and find the centers of left and right lane lines using the `center_of_mass` function in `scipy.ndimage.measurements`. These new centers will be used as the position for the next sliding windows.
 * Repeat the above step and moving the sliding window up by the amount of the window height, until it reaches to the height of the image.
 
@@ -154,7 +139,7 @@ cal_curvature(lr_binary_images)
 ```
 
 
-#### 7. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+#### 7. Output visual display of the lane boundaries and information.
 
 Once we detect the lane in the "bird-eye" view, we can wrap that back to the original image perspective. This can be done using the function
 
@@ -175,7 +160,7 @@ The result of applying these two functions is
 
 ### Pipeline (video)
 
-This pipeline for image can be applied to the video the same way. 
+This pipeline for a single image can be applied to the video the same way. 
 
 Here's a [link to the video result](https://www.youtube.com/watch?v=R33rvELUTQQ)
 
@@ -183,5 +168,5 @@ Here's a [link to the video result](https://www.youtube.com/watch?v=R33rvELUTQQ)
 
 ### Discussion
 
-The most critical part in this project is to generate a binary image that detects the lane lines. This is non-trivial for complicated lighting situations. In the current implementation, detecting lane lines are achieves only using the color thresholds. Using only the color thresholds, the resulted image are much more clean and easier to process than the gradient filtered one. The color thresholds are based on the assumption that the lane line is either yellow or white and works very well for the video provided. However, color thresholds alone are not enough for the situation where the lane lines colors are changed dramatically under complicated lighting situations. For future improvements, combining color and gradient filters may leading better performance. 
+The most critical part in this project is to generate a binary image that detects the lane lines. This is non-trivial for complicated lighting situations. In the current implementation, detecting lane lines are achieved by using only the color thresholds. By using only the color thresholds, the resulted image are much more clean and easier to process than the gradient filtered one. The color thresholds are based on the assumption that the lane line is either yellow or white, and it appears to work very well for the video provided. However, color thresholds alone are not enough for the situation where the lane lines colors are changed dramatically under complicated lighting situations. For future improvements, combining color and gradient filters may lead better results. 
 
